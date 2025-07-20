@@ -5,7 +5,7 @@
   <arg name="do_fine_temporal_sync" default="false"/>
 
   <!-- Set online to true if you use rosbag play or sensor stream -->
-  <arg name="online" default="false" />
+  <arg name="online" default="true" />
   <!-- Set use_sim_time to true if you use rosbag with clock argument -->
   <param name="use_sim_time" value="true"/>
   <!-- Set log_output to true and KimeraVIO will log output of all modules to
@@ -15,8 +15,8 @@
     default="$(find kimera_vio_ros)/output_logs/$(arg dataset_name)"
        if="$(arg log_output)"/>
   <!-- Set to true and specify gt_topic if you want to log ground-truth data -->
-  <arg name="log_gt_data" default="false"/>
-  <arg name="gt_topic" default=""/>
+  <arg name="log_gt_data" default="true"/>
+  <arg name="gt_topic" default="/groundtruth/odometry"/>
 
   <rosparam param="gt_gyro_bias"> [-0.002229, 0.0207, 0.07635] </rosparam>
   <rosparam param="gt_accel_bias"> [-0.012492, 0.547666, 0.069073] </rosparam>
@@ -70,4 +70,13 @@
   <!-- Launch actual pipeline -->
   <include file="$(find kimera_vio_ros)/launch/kimera_vio_ros.launch"
     pass_all_args="true"/>
+
+  <!-- rviz -d $(rospack find kimera_vio_ros)/rviz/kimera_vio_euroc.rviz -->
+  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find kimera_vio_ros)/rviz/kimera_vio_euroc.rviz">
+    <param name="use_sim_time" value="true"/>
+  </node>
+  
+  <node pkg="rosbag" type="play" name="rosbag_play" if="$(arg online)" args="/home/raymond/HTX/2_Dataset/Euroc/V1_01_easy_with_gt.bag --clock --quiet"> 
+  </node>
+
 </launch>
